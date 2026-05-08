@@ -581,9 +581,14 @@
               <input class="form-control" id="orc-nome" placeholder="Ex: João Silva" oninput="updatePreview()">
             </div>
             <div class="form-group">
-              <label>Número de Celular</label>
-              <input class="form-control" id="orc-cel" placeholder="(00) 00000-0000" oninput="maskPhone(this); updatePreview()">
+              <label>Ordem de Serviço</label>
+              <input class="form-control" id="orc-os" placeholder="Ex: 19902" oninput="updatePreview()">
             </div>
+          </div>
+
+          <div class="form-group">
+            <label>Número de Celular</label>
+            <input class="form-control" id="orc-cel" placeholder="(00) 00000-0000" oninput="maskPhone(this); updatePreview()">
           </div>
 
           <div class="form-group">
@@ -662,9 +667,15 @@
     <div class="orcamento-layout">
       <div class="card">
         <div class="form-grid" style="gap:14px">
-          <div class="form-group">
-            <label>Nome do Cliente</label>
-            <input class="form-control" id="pronto-nome" placeholder="Ex: João Silva" oninput="updateProntoPreview()">
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label>Nome do Cliente</label>
+              <input class="form-control" id="pronto-nome" placeholder="Ex: João Silva" oninput="updateProntoPreview()">
+            </div>
+            <div class="form-group">
+              <label>Ordem de Serviço</label>
+              <input class="form-control" id="pronto-os" placeholder="Ex: 19902" oninput="updateProntoPreview()">
+            </div>
           </div>
           <div class="form-group">
             <label>Aparelho</label>
@@ -794,19 +805,19 @@
 <script>
 // ─── TAXAS PADRÃO ───────────────────────────────────────────────────────────
 const TAXAS_DEFAULT = [
-  { id: 'debito',  label: 'Débito',  taxa: 1.5  },
-  { id: 'c1',  label: 'Crédito 1x',  taxa: 2.5  },
-  { id: 'c2',  label: 'Crédito 2x',  taxa: 3.5  },
-  { id: 'c3',  label: 'Crédito 3x',  taxa: 4.0  },
-  { id: 'c4',  label: 'Crédito 4x',  taxa: 4.5  },
-  { id: 'c5',  label: 'Crédito 5x',  taxa: 5.0  },
-  { id: 'c6',  label: 'Crédito 6x',  taxa: 5.5  },
-  { id: 'c7',  label: 'Crédito 7x',  taxa: 6.5  },
-  { id: 'c8',  label: 'Crédito 8x',  taxa: 7.0  },
-  { id: 'c9',  label: 'Crédito 9x',  taxa: 7.5  },
-  { id: 'c10', label: 'Crédito 10x', taxa: 8.5  },
-  { id: 'c11', label: 'Crédito 11x', taxa: 9.0  },
-  { id: 'c12', label: 'Crédito 12x', taxa: 10.0 },
+  { id: 'debito',  label: 'Débito',  taxa: 1.37  },
+  { id: 'c1',  label: 'Crédito 1x',  taxa: 3.15  },
+  { id: 'c2',  label: 'Crédito 2x',  taxa: 5.39  },
+  { id: 'c3',  label: 'Crédito 3x',  taxa: 6.12  },
+  { id: 'c4',  label: 'Crédito 4x',  taxa: 6.95  },
+  { id: 'c5',  label: 'Crédito 5x',  taxa: 7.57  },
+  { id: 'c6',  label: 'Crédito 6x',  taxa: 8.28  },
+  { id: 'c7',  label: 'Crédito 7x',  taxa: 8.99  },
+  { id: 'c8',  label: 'Crédito 8x',  taxa: 9.69  },
+  { id: 'c9',  label: 'Crédito 9x',  taxa: 10.38 },
+  { id: 'c10', label: 'Crédito 10x', taxa: 11.06 },
+  { id: 'c11', label: 'Crédito 11x', taxa: 11.74 },
+  { id: 'c12', label: 'Crédito 12x', taxa: 12.4  },
 ];
 
 function getTaxas() {
@@ -870,36 +881,46 @@ function updateParcelas() {
   // noop — calculated on preview
 }
 
+function buildMsgOrcamento(nome, os, aparelho, diag, valor, parcelas) {
+  const nomeFmt = nome || '[Nome do cliente]';
+  const saudacao = os ? `${nomeFmt}, OS ${os}` : nomeFmt;
+  const aparelhoFmt = aparelho || '[Aparelho]';
+  const diagFmt = diag || '[Diagnóstico]';
+  const parcelaValor = getParcelaValor(valor, parcelas);
+  const valorTotal = parcelaValor * parcelas;
+
+  let msg = `Olá, *${saudacao}*, tudo bem? 👋\n`;
+  msg += `Aqui é da *Technique Eletrônica*.\n\n`;
+  msg += `Realizamos a análise do seu *${aparelhoFmt}* e já identificamos o problema.\n\n`;
+  msg += `🔧 *Diagnóstico:* ${diagFmt}\n\n`;
+  msg += `💰 *Valores para o reparo* (peça + mão de obra):\n`;
+  if (valor > 0) {
+    msg += `✅ À vista: *${fmtMoney(valor)}*\n`;
+    if (parcelas > 1) {
+      msg += `💳 Parcelado: *${parcelas}x de ${fmtMoney(parcelaValor)}* (total ${fmtMoney(valorTotal)})\n`;
+    }
+  }
+  msg += `\n⏱️ Prazo estimado de entrega após aprovação: *3 a 5 dias úteis*.\n`;
+  msg += `\n✅ Utilizamos apenas *peças originais ou de primeira linha*, com *garantia no serviço*.\n`;
+  msg += `\nFico no aguardo da sua posição. 😊\n`;
+  msg += `\nTenha um ótimo dia!`;
+  return msg;
+}
+
 function updatePreview() {
   const nome = document.getElementById('orc-nome').value.trim();
+  const os = document.getElementById('orc-os').value.trim();
   const aparelho = document.getElementById('orc-aparelho').value.trim();
   const diag = document.getElementById('orc-diag').value.trim();
   const valor = parseFloat(document.getElementById('orc-valor').value) || 0;
   const parcelas = parseInt(document.getElementById('orc-parcelas').value);
 
-  if (!nome && !aparelho && !diag && !valor) {
+  if (!nome && !os && !aparelho && !diag && !valor) {
     document.getElementById('preview-text').innerHTML = '<span style="color:#4a5568;font-style:italic">Preencha os campos ao lado para visualizar a mensagem...</span>';
     return;
   }
 
-  const nomeFmt = nome || '[Nome do cliente]';
-  const aparelhoFmt = aparelho || '[Aparelho]';
-  const diagFmt = diag || '[Diagnóstico]';
-
-  const parcelaValor = getParcelaValor(valor, parcelas);
-
-  let msg = `Olá, *${nomeFmt}*! 👋\n\n`;
-  msg += `Identificamos o problema no seu *${aparelhoFmt}*.\n\n`;
-  msg += `*Diagnóstico:* ${diagFmt}\n\n`;
-  msg += `*Investimento:*\n`;
-  if (valor > 0) {
-    msg += `💵 À vista: ${fmtMoney(valor)}\n`;
-    if (parcelas > 1) {
-      msg += `💳 Parcelado: Até ${parcelas}x de ${fmtMoney(parcelaValor)}\n`;
-    }
-  }
-  msg += `\nPodemos dar continuidade no serviço?`;
-
+  const msg = buildMsgOrcamento(nome, os, aparelho, diag, valor, parcelas);
   document.getElementById('preview-text').innerHTML = boldWA(escapeHtml(msg).replace(/\n/g, '<br>'));
 }
 
@@ -909,22 +930,12 @@ function escapeHtml(s) {
 
 function getMsgOrcamento() {
   const nome = document.getElementById('orc-nome').value.trim();
+  const os = document.getElementById('orc-os').value.trim();
   const aparelho = document.getElementById('orc-aparelho').value.trim();
   const diag = document.getElementById('orc-diag').value.trim();
   const valor = parseFloat(document.getElementById('orc-valor').value) || 0;
   const parcelas = parseInt(document.getElementById('orc-parcelas').value);
-  const parcelaValor = getParcelaValor(valor, parcelas);
-
-  let msg = `Olá, *${nome || '[Nome]'}*! 👋\n\n`;
-  msg += `Identificamos o problema no seu *${aparelho || '[Aparelho]'}*.\n\n`;
-  msg += `*Diagnóstico:* ${diag || '[Diagnóstico]'}\n\n`;
-  msg += `*Investimento:*\n`;
-  if (valor > 0) {
-    msg += `💵 À vista: ${fmtMoney(valor)}\n`;
-    if (parcelas > 1) msg += `💳 Parcelado: Até ${parcelas}x de ${fmtMoney(parcelaValor)}\n`;
-  }
-  msg += `\nPodemos dar continuidade no serviço?`;
-  return msg;
+  return buildMsgOrcamento(nome, os, aparelho, diag, valor, parcelas);
 }
 
 function enviarOrcamento() {
@@ -957,7 +968,7 @@ function enviarOrcamento() {
 }
 
 function limparOrcamento() {
-  ['orc-nome','orc-cel','orc-aparelho','orc-diag','orc-valor'].forEach(id => {
+  ['orc-nome','orc-os','orc-cel','orc-aparelho','orc-diag','orc-valor'].forEach(id => {
     document.getElementById(id).value = '';
   });
   document.getElementById('orc-parcelas').value = '1';
@@ -967,26 +978,30 @@ function limparOrcamento() {
 // ─── APARELHO PRONTO ─────────────────────────────────────────────────────────
 function updateProntoPreview() {
   const nome = document.getElementById('pronto-nome').value.trim();
+  const os = document.getElementById('pronto-os').value.trim();
   const aparelho = document.getElementById('pronto-aparelho').value.trim();
 
-  if (!nome && !aparelho) {
+  if (!nome && !os && !aparelho) {
     document.getElementById('pronto-preview-text').innerHTML = '<span style="color:#4a5568;font-style:italic">Preencha os campos ao lado para visualizar a mensagem...</span>';
     return;
   }
 
   const nomeFmt = nome || '[Nome]';
+  const saudacao = os ? `${nomeFmt}, OS ${os}` : nomeFmt;
   const aparelhoFmt = aparelho || '[Aparelho]';
 
-  let msg = `Olá, *${nomeFmt}*! 😊\n\nSeu *${aparelhoFmt}* está pronto para retirada! ✅\n\nAguardamos você em nossa loja.\n\n*Technique Eletrônica* 🔧`;
+  let msg = `Olá, *${saudacao}*! 😊\n\nSeu *${aparelhoFmt}* está pronto para retirada! ✅\n\nAguardamos você em nossa loja.\n\n*Technique Eletrônica* 🔧`;
   document.getElementById('pronto-preview-text').innerHTML = boldWA(escapeHtml(msg).replace(/\n/g, '<br>'));
 }
 
 function enviarPronto() {
   const nome = document.getElementById('pronto-nome').value.trim();
+  const os = document.getElementById('pronto-os').value.trim();
   const aparelho = document.getElementById('pronto-aparelho').value.trim();
   const cel = document.getElementById('pronto-cel').value.trim();
+  const saudacao = os ? `${nome || '[Nome]'}, OS ${os}` : (nome || '[Nome]');
 
-  const msg = `Olá, *${nome || '[Nome]'}*! 😊\n\nSeu *${aparelho || '[Aparelho]'}* está pronto para retirada! ✅\n\nAguardamos você em nossa loja.\n\n*Technique Eletrônica* 🔧`;
+  const msg = `Olá, *${saudacao}*! 😊\n\nSeu *${aparelho || '[Aparelho]'}* está pronto para retirada! ✅\n\nAguardamos você em nossa loja.\n\n*Technique Eletrônica* 🔧`;
   const phone = cleanPhone(cel);
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
@@ -994,7 +1009,7 @@ function enviarPronto() {
 }
 
 function limparPronto() {
-  ['pronto-nome','pronto-aparelho','pronto-cel'].forEach(id => {
+  ['pronto-nome','pronto-os','pronto-aparelho','pronto-cel'].forEach(id => {
     document.getElementById(id).value = '';
   });
   updateProntoPreview();

@@ -501,9 +501,7 @@
   .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
 
   /* SEARCH */
-  .search-wrapper {
-    position: relative;
-  }
+  .search-wrapper { position: relative; }
   .search-wrapper i {
     position: absolute;
     left: 10px;
@@ -513,6 +511,119 @@
     pointer-events: none;
   }
   .search-wrapper input { padding-left: 34px; }
+
+  /* BOTTOM NAV (mobile only — hidden on desktop) */
+  .bottom-nav { display: none; }
+
+  /* ═══════════════════════════════════════════
+     RESPONSIVE — MOBILE
+  ═══════════════════════════════════════════ */
+  @media (max-width: 700px) {
+    body { flex-direction: column; height: 100dvh; overflow: hidden; }
+
+    /* hide desktop sidebar */
+    .sidebar { display: none; }
+
+    /* main scrolls inside, leaves room for bottom nav */
+    .main {
+      padding: 16px;
+      gap: 16px;
+      padding-bottom: 80px;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .page-header h1 { font-size: 18px; }
+    .page-header p  { font-size: 12px; }
+
+    /* form grid: single column on mobile */
+    .form-grid-2 { grid-template-columns: 1fr; }
+
+    /* orcamento layout: stack vertically */
+    .orcamento-layout {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    /* preview not sticky on mobile */
+    .preview-card { position: static; }
+
+    /* calculadora toggle: full width */
+    .calc-toggle { width: 100%; }
+    .calc-toggle button { flex: 1; font-size: 11px; padding: 7px 8px; }
+
+    /* calc row: stack */
+    .calc-input-row { flex-direction: column; align-items: stretch; }
+    .calc-input-row button { margin-top: 0 !important; width: 100%; }
+
+    /* taxas table: smaller text, less padding */
+    .taxas-table { font-size: 11px; }
+    .taxas-table th, .taxas-table td { padding: 8px 6px; }
+
+    /* config taxa row: 2 cols instead of 3 */
+    .config-taxa-row {
+      grid-template-columns: 1fr 120px;
+      row-gap: 4px;
+    }
+    .config-taxa-row .text-muted { display: none; }
+
+    /* historico filter: stack */
+    .filter-row { flex-wrap: wrap; }
+    .filter-row .search-wrapper { flex: 1 1 100%; max-width: 100%; }
+    .filter-row .form-control { max-width: 100%; }
+
+    /* actions: full width buttons */
+    .row-actions { flex-direction: column-reverse; }
+    .row-actions .btn { width: 100%; justify-content: center; }
+
+    /* card: less padding */
+    .card { padding: 16px; }
+
+    /* toast: full width at bottom above nav */
+    .toast {
+      left: 12px;
+      right: 12px;
+      bottom: 76px;
+      width: auto;
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      z-index: 100;
+      align-items: stretch;
+    }
+
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: color 0.15s;
+      padding: 8px 4px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .bottom-nav-item svg { flex-shrink: 0; }
+    .bottom-nav-item.active { color: var(--green); }
+    .bottom-nav-item span { line-height: 1; }
+  }
 </style>
 </head>
 <body>
@@ -533,29 +644,29 @@
 
   <span class="nav-label">Principal</span>
 
-  <button class="nav-item active" onclick="navigate('orcamento')">
+  <button class="nav-item active" onclick="navigate('orcamento', this)">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
     Robô de Orçamento
   </button>
 
-  <button class="nav-item" onclick="navigate('pronto')">
+  <button class="nav-item" onclick="navigate('pronto', this)">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     Aparelho Pronto
   </button>
 
-  <button class="nav-item" onclick="navigate('calculadora')">
+  <button class="nav-item" onclick="navigate('calculadora', this)">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg>
     Calculadora de Taxas
   </button>
 
-  <button class="nav-item" onclick="navigate('historico')">
+  <button class="nav-item" onclick="navigate('historico', this)">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     Histórico
   </button>
 
   <span class="nav-label">Sistema</span>
 
-  <button class="nav-item" onclick="navigate('config')">
+  <button class="nav-item" onclick="navigate('config', this)">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
     Configurações
   </button>
@@ -796,6 +907,30 @@
 
 </main>
 
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav">
+  <button class="bottom-nav-item active" onclick="navigate('orcamento', this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span>Orçamento</span>
+  </button>
+  <button class="bottom-nav-item" onclick="navigate('pronto', this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <span>Pronto</span>
+  </button>
+  <button class="bottom-nav-item" onclick="navigate('calculadora', this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg>
+    <span>Taxas</span>
+  </button>
+  <button class="bottom-nav-item" onclick="navigate('historico', this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span>Histórico</span>
+  </button>
+  <button class="bottom-nav-item" onclick="navigate('config', this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    <span>Config</span>
+  </button>
+</nav>
+
 <!-- TOAST -->
 <div class="toast" id="toast">
   <svg class="toast-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -830,15 +965,28 @@ function saveTaxasStorage(taxas) {
 }
 
 // ─── NAVEGAÇÃO ───────────────────────────────────────────────────────────────
-function navigate(page) {
+function navigate(page, triggerEl) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  event.currentTarget.classList.add('active');
+
+  const trigger = triggerEl || (typeof event !== 'undefined' ? event.currentTarget : null);
+  if (trigger) trigger.classList.add('active');
+
+  // sync sidebar highlight
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) {
+      n.classList.add('active');
+    }
+  });
 
   if (page === 'historico') renderHistorico();
   if (page === 'calculadora') calcularTaxas();
   if (page === 'config') renderConfig();
+
+  // scroll to top
+  document.querySelector('.main').scrollTop = 0;
 }
 
 // ─── UTILITÁRIOS ─────────────────────────────────────────────────────────────
@@ -889,20 +1037,30 @@ function buildMsgOrcamento(nome, os, aparelho, diag, valor, parcelas) {
   const parcelaValor = getParcelaValor(valor, parcelas);
   const valorTotal = parcelaValor * parcelas;
 
-  let msg = `Olá, *${saudacao}*, tudo bem? 👋\n`;
+  const E = {
+    wave:   '👋',
+    wrench: '🔧',
+    money:  '💰',
+    check:  '✅',
+    card:   '💳',
+    clock:  '⏱️',
+    smile:  '😊',
+  };
+
+  let msg = `Olá, *${saudacao}*, tudo bem? ${E.wave}\n`;
   msg += `Aqui é da *Technique Eletrônica*.\n\n`;
   msg += `Realizamos a análise do seu *${aparelhoFmt}* e já identificamos o problema.\n\n`;
-  msg += `🔧 *Diagnóstico:* ${diagFmt}\n\n`;
-  msg += `💰 *Valores para o reparo* (peça + mão de obra):\n`;
+  msg += `${E.wrench} *Diagnóstico:* ${diagFmt}\n\n`;
+  msg += `${E.money} *Valores para o reparo* (peça + mão de obra):\n`;
   if (valor > 0) {
-    msg += `✅ À vista: *${fmtMoney(valor)}*\n`;
+    msg += `${E.check} À vista: *${fmtMoney(valor)}*\n`;
     if (parcelas > 1) {
-      msg += `💳 Parcelado: *${parcelas}x de ${fmtMoney(parcelaValor)}* (total ${fmtMoney(valorTotal)})\n`;
+      msg += `${E.card} Parcelado: *${parcelas}x de ${fmtMoney(parcelaValor)}* (total ${fmtMoney(valorTotal)})\n`;
     }
   }
-  msg += `\n⏱️ Prazo estimado de entrega após aprovação: *3 a 5 dias úteis*.\n`;
-  msg += `\n✅ Utilizamos apenas *peças originais ou de primeira linha*, com *garantia no serviço*.\n`;
-  msg += `\nFico no aguardo da sua posição. 😊\n`;
+  msg += `\n${E.clock} Prazo estimado de entrega após aprovação: *3 a 5 dias úteis*.\n`;
+  msg += `\n${E.check} Utilizamos apenas *peças originais ou de primeira linha*, com *garantia no serviço*.\n`;
+  msg += `\nFico no aguardo da sua posição. ${E.smile}\n`;
   msg += `\nTenha um ótimo dia!`;
   return msg;
 }

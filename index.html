@@ -1038,13 +1038,13 @@ function buildMsgOrcamento(nome, os, aparelho, diag, valor, parcelas) {
   const valorTotal = parcelaValor * parcelas;
 
   const E = {
-    wave:   '👋',
-    wrench: '🔧',
-    money:  '💰',
-    check:  '✅',
-    card:   '💳',
-    clock:  '⏱️',
-    smile:  '😊',
+    wave:   String.fromCodePoint(0x1F44B),
+    wrench: String.fromCodePoint(0x1F527),
+    money:  String.fromCodePoint(0x1F4B0),
+    check:  String.fromCodePoint(0x2705),
+    card:   String.fromCodePoint(0x1F4B3),
+    clock:  String.fromCodePoint(0x23F1, 0xFE0F),
+    smile:  String.fromCodePoint(0x1F60A),
   };
 
   let msg = `Olá, *${saudacao}*, tudo bem? ${E.wave}\n`;

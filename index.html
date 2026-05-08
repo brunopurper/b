@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Technique Eletrônica</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -955,6 +956,8 @@ const TAXAS_DEFAULT = [
   { id: 'c12', label: 'Crédito 12x', taxa: 12.4  },
 ];
 
+var EM = { wave: '', wrench: '', money: '', check: '', card: '', clock: '', smile: '' };
+
 function getTaxas() {
   const saved = localStorage.getItem('technique_taxas');
   return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(TAXAS_DEFAULT));
@@ -1037,31 +1040,21 @@ function buildMsgOrcamento(nome, os, aparelho, diag, valor, parcelas) {
   const parcelaValor = getParcelaValor(valor, parcelas);
   const valorTotal = parcelaValor * parcelas;
 
-  const E = {
-    wave:   String.fromCodePoint(0x1F44B),
-    wrench: String.fromCodePoint(0x1F527),
-    money:  String.fromCodePoint(0x1F4B0),
-    check:  String.fromCodePoint(0x2705),
-    card:   String.fromCodePoint(0x1F4B3),
-    clock:  String.fromCodePoint(0x23F1, 0xFE0F),
-    smile:  String.fromCodePoint(0x1F60A),
-  };
-
-  let msg = `Olá, *${saudacao}*, tudo bem? ${E.wave}\n`;
-  msg += `Aqui é da *Technique Eletrônica*.\n\n`;
-  msg += `Realizamos a análise do seu *${aparelhoFmt}* e já identificamos o problema.\n\n`;
-  msg += `${E.wrench} *Diagnóstico:* ${diagFmt}\n\n`;
-  msg += `${E.money} *Valores para o reparo* (peça + mão de obra):\n`;
+  let msg = 'Olá, *' + saudacao + '*, tudo bem?\n';
+  msg += 'Aqui é da *Technique Eletrônica*.\n\n';
+  msg += 'Realizamos a análise do seu *' + aparelhoFmt + '* e já identificamos o problema.\n\n';
+  msg += '*Diagnóstico:* ' + diagFmt + '\n\n';
+  msg += '*Valores para o reparo* (peça + mão de obra):\n';
   if (valor > 0) {
-    msg += `${E.check} À vista: *${fmtMoney(valor)}*\n`;
+    msg += 'À vista: *' + fmtMoney(valor) + '*\n';
     if (parcelas > 1) {
-      msg += `${E.card} Parcelado: *${parcelas}x de ${fmtMoney(parcelaValor)}* (total ${fmtMoney(valorTotal)})\n`;
+      msg += 'Parcelado: *' + parcelas + 'x de ' + fmtMoney(parcelaValor) + '* (total ' + fmtMoney(valorTotal) + ')\n';
     }
   }
-  msg += `\n${E.clock} Prazo estimado de entrega após aprovação: *3 a 5 dias úteis*.\n`;
-  msg += `\n${E.check} Utilizamos apenas *peças originais ou de primeira linha*, com *garantia no serviço*.\n`;
-  msg += `\nFico no aguardo da sua posição. ${E.smile}\n`;
-  msg += `\nTenha um ótimo dia!`;
+  msg += '\nPrazo estimado após aprovação: *3 a 5 dias úteis*.\n';
+  msg += '\nUtilizamos apenas *peças originais ou de primeira linha*, com *garantia no serviço*.\n';
+  msg += '\nFico no aguardo da sua posição.\n';
+  msg += '\nTenha um ótimo dia!';
   return msg;
 }
 
@@ -1148,7 +1141,7 @@ function updateProntoPreview() {
   const saudacao = os ? `${nomeFmt}, OS ${os}` : nomeFmt;
   const aparelhoFmt = aparelho || '[Aparelho]';
 
-  let msg = `Olá, *${saudacao}*! 😊\n\nSeu *${aparelhoFmt}* está pronto para retirada! ✅\n\nAguardamos você em nossa loja.\n\n*Technique Eletrônica* 🔧`;
+  let msg = 'Olá, *' + saudacao + '*!\n\nSeu *' + aparelhoFmt + '* está pronto para retirada!\n\nAguardamos você em nossa loja.\n\n*Technique Eletrônica*';
   document.getElementById('pronto-preview-text').innerHTML = boldWA(escapeHtml(msg).replace(/\n/g, '<br>'));
 }
 
@@ -1159,7 +1152,7 @@ function enviarPronto() {
   const cel = document.getElementById('pronto-cel').value.trim();
   const saudacao = os ? `${nome || '[Nome]'}, OS ${os}` : (nome || '[Nome]');
 
-  const msg = `Olá, *${saudacao}*! 😊\n\nSeu *${aparelho || '[Aparelho]'}* está pronto para retirada! ✅\n\nAguardamos você em nossa loja.\n\n*Technique Eletrônica* 🔧`;
+  const msg = 'Olá, *' + saudacao + '*!\n\nSeu *' + (aparelho || '[Aparelho]') + '* está pronto para retirada!\n\nAguardamos você em nossa loja.\n\n*Technique Eletrônica*';
   const phone = cleanPhone(cel);
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
